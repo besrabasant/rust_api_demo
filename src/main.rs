@@ -3,7 +3,7 @@ mod modules;
 use dotenv::dotenv;
 use modules::core::infrastructure::web_server;
 use modules::core::application::service::ApplicationService;
-use modules::user;
+use modules::{home, user};
 use std::env;
 
 #[tokio::main]
@@ -18,6 +18,7 @@ async fn main() {
     });
 
     let mut app_service = ApplicationService::new();
+    app_service.register_module(home::module);
     app_service.register_module(user::module);
 
     // Use the parsed server_port instead of hardcoding it
