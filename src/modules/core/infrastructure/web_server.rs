@@ -1,22 +1,24 @@
+use std::error::Error;
+use std::result::Result;
 
-// src/modules/core/infrastructure/web_server.rs
-use actix_web::{web, App, HttpServer, Responder, HttpResponse};
+use crate::modules::core::application::service::ApplicationService;
 
-pub async fn start_server(server_port: i16) -> std::io::Result<()> {
+pub async fn start_server(app_service: &ApplicationService, server_port: u16) -> Result<(), Box<dyn Error>> {
+    // Define the app routes
+    let app = app_service.configure_router();
 
-    let server_address = format!("127.0.0.1:{}", server_port);
+    // Define the server address
+    let app_log_address = format!("127.0.0.1:{}", server_port);
+    let app_bind_address = format!("0.0.0.0:{}", server_port);
+    
+    println!("Listening on http://{}", app_log_address);
 
-    HttpServer::new(|| {
-        App::new().route("/", web::get().to(greet))
-    })
-    .bind(server_address)?
-    .run()
-    .await
+    // Run our app with hyper, listening globally on the specified port
+    let listener = tokio::net::TcpListener::bind(&app_bind_address)
+        .await
+        .unwrap();
+    match axum::serve(listener, app).await {
+        Ok(_) => Ok(()),
+        Err(e) => Err(Box::new(e)),
+    }
 }
-
-async fn greet() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
-}
-
-// src/modules/core/infrastructure/repository.rs
-// Implementations of repositories that interact with databases
