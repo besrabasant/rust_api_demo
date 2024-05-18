@@ -5,7 +5,7 @@ Practicing Rust
 
 ## Usage
 
-### Setting Up Environment Variables
+### Step 1: Setting Up Environment Variables
 To run this Rust API project, you need to set up environment variables. This is typically done using a `.env` file. Below are the steps to copy and create a new `.env` file for your project:
 
 1. **Copy the Example `.env` File**:
@@ -21,3 +21,8 @@ To run this Rust API project, you need to set up environment variables. This is 
     ```dotenv
     APP_PORT=8000 # or any custom port
     ```
+### Step 2: Run the Application
+To run the application, use the following command in your terminal:
+```sh
+make run
+```
