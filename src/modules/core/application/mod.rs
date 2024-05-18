@@ -1,2 +1,2 @@
-// src/modules/core/application/mod.rs
+/// Contains core module application layer services.
 pub mod service;

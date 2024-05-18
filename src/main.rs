@@ -6,6 +6,9 @@ use modules::core::application::service::ApplicationService;
 use modules::{home, product, user};
 use std::env;
 
+/**
+ * The Main Entry point of the application
+ */
 #[tokio::main]
 async fn main() {
     // Loads environment variables from a .env

@@ -3,6 +3,7 @@ use axum::Router;
 
 /// `ApplicationService` manages configuration modules for an Axum `Router`.
 /// Each module is a function that configures part of the service.
+/// such as routing, service registration
 pub struct ApplicationService {
     pub modules: Vec<Box<dyn Fn(Router) -> Router + Send + Sync>>,
  }

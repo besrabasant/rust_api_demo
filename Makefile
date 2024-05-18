@@ -22,3 +22,7 @@ watch:
 # Run tests
 test:
 	cargo test
+
+# View documentation
+doc:
+	cargo doc --open
