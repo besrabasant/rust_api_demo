@@ -1,20 +1,52 @@
 pub mod application;
 
-use actix_web::{web, HttpResponse}; 
-use application::product_service;
+use self::application::product_service::{Product, ProductService};
+use axum::{
+    http::StatusCode,
+    routing::{get, post},
+    Json, Router,
+};
+use std::sync::Arc;
 
-pub fn module(cfg: &mut web::ServiceConfig) {
-    let product_service = product_service::ProductService::new();
+pub fn module(router: Router) -> Router {
+    let product_service = Arc::new(ProductService::new());
 
-    cfg.service(
-        web::resource("/products")
-            .route(web::get().to(|| {
-                let message = product_service.list_products();
-                async move { HttpResponse::Ok().body(message) }
-            }))
-            .route(web::post().to(|| {
-                let message = product_service.add_product();
-                async move { HttpResponse::Ok().body(message) }
-            }))
-    );
+    let product_controller = Arc::new(ProductController::new(product_service));
+
+    router
+        .route(
+            "/products",
+            get({
+                let product_controller = product_controller.clone();
+                move || async move { product_controller.index().await }
+            }),
+        )
+        .route(
+            "/products",
+            post({
+                let product_controller = product_controller.clone();
+                move || async move { product_controller.store().await }
+            }),
+        )
+}
+
+#[derive(Clone)]
+pub struct ProductController {
+    pub product_service: Arc<ProductService>,
+}
+
+impl ProductController {
+    pub fn new(product_service: Arc<ProductService>) -> Self {
+        ProductController { product_service }
+    }
+
+    pub async fn index(&self) -> (StatusCode, Json<Vec<Product>>) {
+        let products = self.product_service.list_products().await;
+        (StatusCode::OK, Json(products))
+    }
+
+    pub async fn store(&self) -> (StatusCode, Json<Product>) {
+        let product = self.product_service.add_product().await;
+        (StatusCode::OK, Json(product))
+    }
 }

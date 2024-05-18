@@ -18,14 +18,14 @@ pub fn module(router: Router) -> Router {
             "/users",
             get({
                 let user_controller = user_controller.clone();
-                move || async move { user_controller.list_users().await }
+                move || async move { user_controller.index().await }
             }),
         )
         .route(
             "/users",
             post({
                 let user_controller = user_controller.clone();
-                move || async move { user_controller.create_user().await }
+                move || async move { user_controller.store().await }
             }),
         )
 }
@@ -40,12 +40,12 @@ impl UserController {
         UserController { user_service }
     }
 
-    pub async fn list_users(&self) -> (StatusCode, Json<Vec<User>>) {
+    pub async fn index(&self) -> (StatusCode, Json<Vec<User>>) {
         let users = self.user_service.list_users().await;
         (StatusCode::OK, Json(users))
     }
 
-    pub async fn create_user(&self) -> (StatusCode, Json<User>) {
+    pub async fn store(&self) -> (StatusCode, Json<User>) {
         let user = self.user_service.create_user().await;
         (StatusCode::CREATED, Json(user))
     }
